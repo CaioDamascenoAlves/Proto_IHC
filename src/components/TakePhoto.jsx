@@ -1,99 +1,78 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Button, Box, Modal } from "@mui/material";
-import { useUserMedia } from "./useUserMedia";
-
-const modalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  width: "auto",
-  maxWidth: "600px",
-};
+import React, { useState, useRef } from 'react';
+import { Button } from '@mui/material';
 
 const TakePhotoButton = () => {
-  const { stream, error } = useUserMedia({ video: true });
+  const [stream, setStream] = useState(null);
   const videoRef = useRef(null);
-  const [open, setOpen] = useState(false);
-  const [photo, setPhoto] = useState(null);
+  const canvasRef = useRef(null);
 
-  useEffect(() => {
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      setStream(mediaStream);
+    } catch (error) {
+      console.error("Error accessing the camera:", error);
+    }
+  };
+
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+  };
+
+  const takePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const context = canvasRef.current.getContext('2d');
+      const { videoWidth, videoHeight } = videoRef.current;
+
+      // Set canvas size to the size of the video.
+      canvasRef.current.width = videoWidth;
+      canvasRef.current.height = videoHeight;
+
+      // Draw the video frame to the canvas.
+      context.drawImage(videoRef.current, 0, 0, videoWidth, videoHeight);
+
+      // Create a data URL from the canvas image.
+      const imageDataUrl = canvasRef.current.toDataURL('image/png');
+
+      // Create a link element, set the filename and download.
+      const link = document.createElement('a');
+      link.href = imageDataUrl;
+      link.download = 'photo.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  // Effect to assign the stream to the video element
+  React.useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
 
-  const handleStartCamera = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-    }
-    setOpen(false);
-  };
-
-  const handleTakePhoto = () => {
-    const canvas = document.createElement("canvas");
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-    const context = canvas.getContext("2d");
-    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-
-    // Correção: Utilizando canvas.toDataURL() para contornar o problema com createObjectURL
-    const photoDataUrl = canvas.toDataURL("image/png");
-    setPhoto(photoDataUrl);
-
-    // Oferece a foto para download diretamente sem criar um Blob
-    const link = document.createElement("a");
-    link.href = photoDataUrl;
-    link.download = "photo.png"; // Define o nome do arquivo para download
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  if (error) {
-    return <div>Error accessing the camera: {error.toString()}</div>;
-  }
-
   return (
-    <Box textAlign="center" marginTop={2}>
-      <Button variant="contained" onClick={handleStartCamera}>
+    <div>
+      <Button variant="contained" onClick={startCamera}>
         Iniciar Câmera
       </Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={modalStyle}>
-          {stream && (
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              style={{ width: "100%" }}
-            />
-          )}
-          <Button variant="contained" onClick={handleTakePhoto} sx={{ mt: 2 }}>
+      {stream && (
+        <div>
+          <video ref={videoRef} autoPlay playsInline style={{ width: "100%" }} />
+          <Button variant="contained" onClick={takePhoto} style={{ marginTop: '10px' }}>
             Tirar Foto
           </Button>
-          <Button variant="contained" onClick={handleClose} sx={{ mt: 2 }}>
-            Fechar
+          <Button variant="contained" onClick={stopCamera} style={{ marginTop: '10px' }}>
+            Parar Câmera
           </Button>
-        </Box>
-      </Modal>
-    </Box>
+        </div>
+      )}
+      {/* Hidden canvas element */}
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
+    </div>
   );
 };
 
