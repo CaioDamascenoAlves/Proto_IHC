@@ -62,9 +62,9 @@ const Home = () => {
             >
               Denunciar Abuso
             </Button>
-            <Button variant="outlined" color="primary">
+            {/* <Button variant="outlined" color="primary">
               Adotar um Pet
-            </Button>
+            </Button> */}
           </Box>
         </Paper>
       </Container>

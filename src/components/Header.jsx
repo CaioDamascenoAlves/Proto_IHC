@@ -66,7 +66,7 @@ const Header = () => {
                     >
                         {list()}
                     </Drawer>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" component={Link} sx={{ flexGrow: 1 }} to={'/'}>
                         Resgate animal
                     </Typography>
                     {/* O botão Login agora é um Link para a rota /login */}
