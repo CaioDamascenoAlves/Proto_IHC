@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ImageUpload from "./ImgUpload";
-
+import TakePhotoButton from "./TakePhoto";
 // Criação de um tema escuro
 const darkTheme = createTheme({
   palette: {
@@ -84,6 +84,7 @@ const FormDenuncia = () => {
           onChange={handleChange}
         />
         <ImageUpload />
+        <TakePhotoButton />
         <Button type="submit" variant="contained" color="primary" fullWidth>
           Enviar Denúncia
         </Button>
