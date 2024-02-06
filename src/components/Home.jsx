@@ -2,7 +2,14 @@ import React from "react";
 import { Box, Typography, Button, Container, Paper } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import minhaImagem from "../assets/Abandonado-Feliz.webp"; // Ajuste o caminho para a localização da sua imagem
+import adocao1 from "../assets/adocao1.jpg";
+import adocao2 from "../assets/adocao2.jpg";
+import adocao3 from "../assets/adocao3.jpg";
 import { Link } from "react-router-dom";
+import Carousel from "./Carousel";
+import alerta1 from "../assets/alerta1.webp";
+import alerta2 from "../assets/alerta2.jpeg";
+import alerta3 from "../assets/alerta3.jpg";
 
 const darkTheme = createTheme({
   palette: {
@@ -20,6 +27,11 @@ const Home = () => {
     maxWidth: "600px", // limite máximo da largura
     maxHeight: "auto", // ou um valor específico como '400px'
   };
+
+const imagensAdocao = [adocao2, adocao3, adocao1]
+const imagensAlerta = [alerta1, alerta2, alerta3]
+const textoAdocao = [ "Luna", "Branquinho", "Robson"]
+const textoAlerta = [ "Bairro Tanquinho, Rua Bahia", "Bairro Aclimação, Rua Colatina", "Bairro Santa Bárbara, Av. Gentil Bicalho"]
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -67,6 +79,20 @@ const Home = () => {
             </Button> */}
           </Box>
         </Paper>
+        <Typography variant="h4" sx={{ my: 2 }}>
+            Alguns animais que a população tem denunciado que apresentam perigo e o local que se encontram:
+        </Typography>
+        <Carousel images={imagensAlerta} carouselText={textoAlerta} tipo={"alerta"}/>
+        <Typography variant="h4" sx={{ my: 2 }}>
+            Deseja ajudar na causa e adotar um pet? Conheça alguns dos animais que estão à procura de um lar:
+        </Typography>
+        <Carousel images={imagensAdocao} carouselText={textoAdocao} tipo={"adotar"}/>
+        <Typography variant="body1" sx={{ my: 2 }}>
+            Todos os animais que estão para adoção são castrados, vacinados e vermifugados. Além disso, 
+            são animais que foram resgatados de situações de risco e maus tratos e estão prontos para encontrar 
+            um lar amoroso e seguro.
+            Ao selecionar um animal para adotar, você estará salvando uma vida e dando a chance de um recomeço.
+        </Typography>
       </Container>
     </ThemeProvider>
   );
